@@ -2,6 +2,7 @@
 #include "main.h"
 #include "rcc.h"
 #include "led.h"
+#include "sw.h"
 #include "stm32f1xx_hal_gpio.h"
 
 int main(void) {
@@ -14,9 +15,14 @@ int main(void) {
 	uint32_t PCLK2Freq = HAL_RCC_GetPCLK2Freq();
 
 	LED_Init();
+	SW_Init();
 
 	while (1) {
-		HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_6);
-		HAL_Delay(1000);
+		switch(SW_Scan_UP_DELAY(3000)) {
+			case 8: 
+				HAL_GPIO_TogglePin(LED_GPIO_GROUP, LED_PIN);
+				break;
+			default: break;
+		}
 	}
 }
