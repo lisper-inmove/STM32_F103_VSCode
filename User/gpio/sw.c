@@ -65,6 +65,8 @@ uint8_t SW_Scan_DOWN() {
 		按下触发来控制SW8
 	*/
 	uint32_t i = 0;
+    uint32_t r1 = SW_IN;
+    uint32_t r2 = SW_IN;
 	if (SW_IN == 1 && sw_pressed == 0) {
 		for (i = 0; i < 0x7FFF; i++) { // 消抖
 			if (SW_IN == 0) {

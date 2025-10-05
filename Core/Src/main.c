@@ -18,7 +18,7 @@ int main(void) {
 	SW_Init();
 
 	while (1) {
-		switch(SW_Scan_UP_DELAY(3000)) {
+		switch(SW_Scan_DOWN()) {
 			case 8: 
 				HAL_GPIO_TogglePin(LED_GPIO_GROUP, LED_PIN);
 				break;
