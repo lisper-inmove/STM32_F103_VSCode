@@ -2,15 +2,12 @@
 #define __SW_H
 
 #include <stdint.h>
+#include "main.h"
 
-#define SW_PIN GPIO_PIN_15
-#define SW_GPIO_GROUP GPIOC
-#define LED_PIN GPIO_PIN_6
-#define LED_GPIO_GROUP GPIOA
-
-#define SW_IN HAL_GPIO_ReadPin(SW_GPIO_GROUP, SW_PIN)
+#define SW_IN HAL_GPIO_ReadPin(SW_GPIO_Port, SW_Pin)
 
 void SW_Init(void);
+void SW_Init_IT(void);
 uint8_t SW_Scan_DOWN(void);
 uint8_t SW_Scan_LONG_DOWN(void);
 uint8_t SW_Scan_UP(void);

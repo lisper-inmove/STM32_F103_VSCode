@@ -15,16 +15,8 @@ int main(void) {
 	uint32_t PCLK2Freq = HAL_RCC_GetPCLK2Freq();
 
 	LED_Init();
-	// SW_Init();
+	SW_Init_IT();
 
 	while (1) {
-		HAL_GPIO_TogglePin(GPIOB, GPIO_PIN_6);
-		HAL_Delay(500);
-		// switch(SW_Scan_DOWN()) {
-		// 	case 8: 
-		// 		HAL_GPIO_TogglePin(LED_GPIO_GROUP, LED_PIN);
-		// 		break;
-		// 	default: break;
-		// }
 	}
 }

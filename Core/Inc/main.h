@@ -59,6 +59,22 @@ void Error_Handler(void);
 /* Private defines -----------------------------------------------------------*/
 #define LED_Pin GPIO_PIN_6
 #define LED_GPIO_Port GPIOA
+#define SW_Pin GPIO_PIN_0
+#define SW_GPIO_Port GPIOA
+
+#define GPIO_CLK_ENABLE_BY_PORT(port)               \
+  do {                                              \
+    if ((port) == GPIOA)      { __HAL_RCC_GPIOA_CLK_ENABLE(); } \
+    else if ((port) == GPIOB) { __HAL_RCC_GPIOB_CLK_ENABLE(); } \
+    else if ((port) == GPIOC) { __HAL_RCC_GPIOC_CLK_ENABLE(); } \
+  } while (0)
+
+#define GPIO_CLK_DISABLE_BY_PORT(port)              \
+  do {                                              \
+    if ((port) == GPIOA)      { __HAL_RCC_GPIOA_CLK_DISABLE(); } \
+    else if ((port) == GPIOB) { __HAL_RCC_GPIOB_CLK_DISABLE(); } \
+    else if ((port) == GPIOC) { __HAL_RCC_GPIOC_CLK_DISABLE(); } \
+  } while (0)
 
 /* USER CODE BEGIN Private defines */
 

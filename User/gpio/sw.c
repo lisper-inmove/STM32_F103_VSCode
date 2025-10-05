@@ -1,4 +1,5 @@
 #include "sw.h"
+#include "main.h"
 #include "stm32f1xx_hal.h"
 
 /**
@@ -32,16 +33,15 @@
 			适用于输出驱动模式，或者外部电路已经决定了输入引脚的电平。
 
 	2. GPIO_PULLUP
-		含义：启用上拉电阻。
-		作用：该选项启用内部上拉电阻，使GPIO引脚在没有外部驱动的情况下保持高电平（VCC）。
-			当外部电路没有驱动时，GPIO引脚将会拉到高电平。
+		含义：启用上拉电阻。上拉电阻接了一个Vdd（高电平）
+		作用：当引脚悬空时（如果有按钮的话，就是按钮抬起），片上外设为高电平。Vdd的电平状态传给了片上外设。
+			如果有按钮的话，按钮应该接地，这样按下按钮时，才能改变片上外设的状态
 		适用场景：
 			用于按钮、开关等输入设备，确保输入引脚在未按下按钮或未接入信号时有一个已知的高电平状态。
 
 	3. GPIO_PULLDOWN
-		含义：启用下拉电阻。
-		作用：该选项启用内部下拉电阻，使GPIO引脚在没有外部驱动的情况下保持低电平（GND）。
-			当外部电路没有驱动时，GPIO引脚将会拉到低电平。
+		含义：启用下拉电阻。下拉电阻接地
+		作用：与PULLUP相反
 		适用场景：用于按钮、开关等输入设备，确保输入引脚在未按下按钮或未接入信号时有一个已知的低电平状态。
 */
 
@@ -49,15 +49,15 @@ uint8_t sw_pressed = 0;
 
 void SW_Init(void) {
 	GPIO_InitTypeDef GPIO_InitType;
-	__HAL_RCC_GPIOC_CLK_ENABLE();
-	GPIO_InitType.Pin = SW_PIN;
+	GPIO_CLK_ENABLE_BY_PORT(SW_GPIO_Port);
+	GPIO_InitType.Pin = SW_Pin;
 	GPIO_InitType.Mode = GPIO_MODE_INPUT;
 	GPIO_InitType.Pull = GPIO_PULLDOWN;
 	// GPIO_InitType.Pull = GPIO_PULLUP;
 	// GPIO_InitType.Pull = GPIO_NOPULL;
-	HAL_GPIO_Init(SW_GPIO_GROUP, &GPIO_InitType);
+	HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitType);
 	
-	HAL_GPIO_WritePin(SW_GPIO_GROUP, SW_PIN, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(LED_GPIO_Port, SW_Pin, GPIO_PIN_RESET);
 }
 
 uint8_t SW_Scan_DOWN() {
@@ -140,4 +140,34 @@ uint8_t SW_Scan_UP_DELAY(uint32_t delay) {
 		return 8;
 	}
 	return 0;
+}
+
+// =========================== 通过中断控制按键 ==================================
+void SW_Init_IT() {
+	GPIO_InitTypeDef GPIO_InitType;
+	GPIO_CLK_ENABLE_BY_PORT(SW_GPIO_Port);
+	GPIO_InitType.Pin = SW_Pin;
+	// 按键中断，上升延触发
+	GPIO_InitType.Mode = GPIO_MODE_IT_RISING;
+	// GPIO_InitType.Mode = GPIO_MODE_IT_FALLING;
+	// GPIO_InitType.Pull = GPIO_PULLDOWN;
+	GPIO_InitType.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitType);
+	
+	HAL_NVIC_SetPriority(EXTI0_IRQn, 4, 0);
+	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+	uint32_t i;
+	if(SW_IN == 1) {
+		for (i = 0; i < 0x7FFF; i++) {
+			if (SW_IN == 0) return;
+		}
+		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+	}
+}
+
+void EXTI0_IRQHandler(void) {
+	HAL_GPIO_EXTI_IRQHandler(SW_Pin);
 }
