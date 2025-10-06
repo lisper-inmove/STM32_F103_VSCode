@@ -8,6 +8,7 @@
 
 void SW_Init(void);
 void SW_Init_IT(void);
+void SW_Init_Event(void);
 uint8_t SW_Scan_DOWN(void);
 uint8_t SW_Scan_LONG_DOWN(void);
 uint8_t SW_Scan_UP(void);

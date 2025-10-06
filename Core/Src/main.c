@@ -2,6 +2,7 @@
 #include "main.h"
 #include "rcc.h"
 #include "led.h"
+#include "stm32f1xx_hal_pwr.h"
 #include "sw.h"
 #include "stm32f1xx_hal_gpio.h"
 
@@ -15,15 +16,20 @@ int main(void) {
 	uint32_t PCLK2Freq = HAL_RCC_GetPCLK2Freq();
 
 	LED_Init();
-	SW_Init_IT();
+	SW_Init_Event();
 
 	while (1) {
-		// HAL_Delay(500);
-		/**
-			触发与 SW_Pin 引脚连接的中断线 的中断
-			相当于 SW_Pin 触发了一次中断。
-			使用按键触发与之是一样的逻辑
-		*/
-		// __HAL_GPIO_EXTI_GENERATE_SWIT(SW_Pin);
+		for (int i = 0; i < 10; i++) {
+			HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+			HAL_Delay(500);
+		}
+		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
+
+		// 关中断
+		HAL_SuspendTick();
+		// 进入睡眠模式
+		HAL_PWR_EnterSLEEPMode(0, PWR_SLEEPENTRY_WFE);
+		// 恢复中断
+		HAL_ResumeTick();
 	}
 }

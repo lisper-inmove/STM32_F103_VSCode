@@ -1,6 +1,7 @@
 #include "sw.h"
 #include "main.h"
 #include "stm32f1xx_hal.h"
+#include "stm32f1xx_hal_gpio.h"
 
 /**
 	GPIO_MODE_INPUT: 输入模式，GPIO引脚用于接收外部信号。
@@ -184,4 +185,18 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 
 void EXTI0_IRQHandler(void) {
 	HAL_GPIO_EXTI_IRQHandler(SW_Pin);
+}
+
+// =========================== 通过事件控制按键 ==================================
+
+void SW_Init_Event(void) {
+	GPIO_InitTypeDef GPIO_InitType;
+	GPIO_CLK_ENABLE_BY_PORT(SW_GPIO_Port);
+	GPIO_InitType.Pin = SW_Pin;
+	// 按键中断，上升延触发
+	GPIO_InitType.Mode = GPIO_MODE_EVT_RISING;
+	// GPIO_InitType.Mode = GPIO_MODE_IT_FALLING;
+	// GPIO_InitType.Pull = GPIO_PULLDOWN;
+	GPIO_InitType.Pull = GPIO_PULLUP;
+	HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitType);
 }
