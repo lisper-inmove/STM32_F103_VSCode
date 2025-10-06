@@ -143,6 +143,14 @@ uint8_t SW_Scan_UP_DELAY(uint32_t delay) {
 }
 
 // =========================== 通过中断控制按键 ==================================
+/**
+	RISING: 片上外设遇到一个上升沿时触发中断（FALLING则是下降沿）
+	PULLDOWN: 下拉电阻有效（片上外设默认为低电平）此时，引脚需要接一个高电平。
+		按下时，片上外设 产生一个上升沿，保持按下则保持高电平。
+		抬起时，片上外设产生一个低电平，不再按下则保持低电平。
+	PULLUP: 上拉电阻有效，片上外设默认为高电平，引脚需要接一个低电平。
+		对于按钮的按下和抬起与PULLDOWN相反
+*/
 void SW_Init_IT() {
 	GPIO_InitTypeDef GPIO_InitType;
 	GPIO_CLK_ENABLE_BY_PORT(SW_GPIO_Port);
@@ -154,6 +162,12 @@ void SW_Init_IT() {
 	GPIO_InitType.Pull = GPIO_PULLUP;
 	HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitType);
 	
+	/** 
+		EXTI0_IRQn: 引脚编号为0的那条外部中断线。
+			其它的还有 EXTI1_IRQn，EXTI2_IRQn，EXTI3_IRQn，EXTI4_IRQn
+			EXTI9_5_IRQn 5~9
+			EXTI15_10_IRQn 10~15
+	*/
 	HAL_NVIC_SetPriority(EXTI0_IRQn, 4, 0);
 	HAL_NVIC_EnableIRQ(EXTI0_IRQn);
 }
