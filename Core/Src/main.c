@@ -18,5 +18,12 @@ int main(void) {
 	SW_Init_IT();
 
 	while (1) {
+		// HAL_Delay(500);
+		/**
+			触发与 SW_Pin 引脚连接的中断线 的中断
+			相当于 SW_Pin 触发了一次中断。
+			使用按键触发与之是一样的逻辑
+		*/
+		// __HAL_GPIO_EXTI_GENERATE_SWIT(SW_Pin);
 	}
 }
