@@ -1,7 +1,10 @@
 #include "sw.h"
+#include "cmsis_gcc.h"
 #include "main.h"
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx_hal_gpio.h"
+#include "stm32f1xx_hal_gpio_ex.h"
+#include "stm32f1xx_hal_rcc.h"
 
 /**
 	GPIO_MODE_INPUT: 输入模式，GPIO引脚用于接收外部信号。
@@ -56,9 +59,9 @@ void SW_Init(void) {
 	GPIO_InitType.Pull = GPIO_PULLDOWN;
 	// GPIO_InitType.Pull = GPIO_PULLUP;
 	// GPIO_InitType.Pull = GPIO_NOPULL;
-	HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitType);
+	HAL_GPIO_Init(SW_GPIO_Port, &GPIO_InitType);
 	
-	HAL_GPIO_WritePin(LED_GPIO_Port, SW_Pin, GPIO_PIN_RESET);
+	HAL_GPIO_WritePin(SW_GPIO_Port, SW_Pin, GPIO_PIN_RESET);
 }
 
 uint8_t SW_Scan_DOWN() {
@@ -161,7 +164,7 @@ void SW_Init_IT() {
 	// GPIO_InitType.Mode = GPIO_MODE_IT_FALLING;
 	// GPIO_InitType.Pull = GPIO_PULLDOWN;
 	GPIO_InitType.Pull = GPIO_PULLUP;
-	HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitType);
+	HAL_GPIO_Init(SW_GPIO_Port, &GPIO_InitType);
 	
 	/** 
 		EXTI0_IRQn: 引脚编号为0的那条外部中断线。
@@ -180,6 +183,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
 			if (SW_IN == 0) return;
 		}
 		HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
+		__SEV();
 	}
 }
 
@@ -193,10 +197,22 @@ void SW_Init_Event(void) {
 	GPIO_InitTypeDef GPIO_InitType;
 	GPIO_CLK_ENABLE_BY_PORT(SW_GPIO_Port);
 	GPIO_InitType.Pin = SW_Pin;
-	// 按键中断，上升延触发
 	GPIO_InitType.Mode = GPIO_MODE_EVT_RISING;
-	// GPIO_InitType.Mode = GPIO_MODE_IT_FALLING;
-	// GPIO_InitType.Pull = GPIO_PULLDOWN;
 	GPIO_InitType.Pull = GPIO_PULLUP;
-	HAL_GPIO_Init(LED_GPIO_Port, &GPIO_InitType);
+	HAL_GPIO_Init(SW_GPIO_Port, &GPIO_InitType);
+}
+
+// =========================== EventOut ==================================
+
+void SW_Init_Event_Out(void) {
+	GPIO_InitTypeDef GPIO_InitType;
+	GPIO_CLK_ENABLE_BY_PORT(SW_GPIO_Port);
+	GPIO_InitType.Pin = Event_Out_GPIO_Pin;
+	GPIO_InitType.Mode = GPIO_MODE_AF_PP;
+	GPIO_InitType.Speed = GPIO_SPEED_FREQ_HIGH;
+	HAL_GPIO_Init(SW_GPIO_Port, &GPIO_InitType);
+
+	__HAL_RCC_AFIO_CLK_ENABLE();
+	HAL_GPIOEx_ConfigEventout(AFIO_EVENTOUT_PORT_A, AFIO_EVENTOUT_PIN_3);
+	HAL_GPIOEx_EnableEventout();
 }

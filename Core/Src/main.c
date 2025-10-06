@@ -16,20 +16,9 @@ int main(void) {
 	uint32_t PCLK2Freq = HAL_RCC_GetPCLK2Freq();
 
 	LED_Init();
-	SW_Init_Event();
+	SW_Init_IT();
 
 	while (1) {
-		for (int i = 0; i < 10; i++) {
-			HAL_GPIO_TogglePin(LED_GPIO_Port, LED_Pin);
-			HAL_Delay(500);
-		}
-		HAL_GPIO_WritePin(LED_GPIO_Port, LED_Pin, GPIO_PIN_RESET);
-
-		// 关中断
-		HAL_SuspendTick();
-		// 进入睡眠模式
-		HAL_PWR_EnterSLEEPMode(0, PWR_SLEEPENTRY_WFE);
-		// 恢复中断
-		HAL_ResumeTick();
+		
 	}
 }

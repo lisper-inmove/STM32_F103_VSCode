@@ -61,6 +61,8 @@ void Error_Handler(void);
 #define LED_GPIO_Port GPIOA
 #define SW_Pin GPIO_PIN_0
 #define SW_GPIO_Port GPIOA
+#define Event_Out_GPIO_Port GPIOA
+#define Event_Out_GPIO_Pin GPIO_PIN_3
 
 #define GPIO_CLK_ENABLE_BY_PORT(port)               \
   do {                                              \
