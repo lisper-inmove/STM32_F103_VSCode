@@ -1,5 +1,5 @@
-#ifndef __RCC_H
-#define __RCC_H
+#ifndef __U_RCC_H
+#define __U_RCC_H
 
 void RccClock_Init(void);
 

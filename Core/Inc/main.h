@@ -63,6 +63,7 @@ void Error_Handler(void);
 #define SW_GPIO_Port GPIOA
 #define Event_Out_GPIO_Port GPIOA
 #define Event_Out_GPIO_Pin GPIO_PIN_3
+#define Serial_GPIO_Port GPIOA
 
 #define GPIO_CLK_ENABLE_BY_PORT(port)               \
   do {                                              \
