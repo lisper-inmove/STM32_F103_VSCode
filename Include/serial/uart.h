@@ -8,8 +8,8 @@
 #include "stm32f1xx_hal_rcc.h"
 #include "stm32f1xx_hal_uart.h"
 
-extern UART_HandleTypeDef uart1;
+extern UART_HandleTypeDef uart;
 
-void UART1_Init(uint32_t baudRate);
+void UART_Init(uint32_t baudRate);
 
 #endif

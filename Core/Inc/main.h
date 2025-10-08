@@ -63,7 +63,41 @@ void Error_Handler(void);
 #define SW_GPIO_Port GPIOA
 #define Event_Out_GPIO_Port GPIOA
 #define Event_Out_GPIO_Pin GPIO_PIN_3
+
+// 串口通信USART1
+#define USART_Port USART1
 #define Serial_GPIO_Port GPIOA
+#define Serial_GPIO_RX_Pin GPIO_PIN_10
+#define Serial_GPIO_TX_Pin GPIO_PIN_9
+
+// 串口通信USART2
+// #define USART_Port USART2
+// #define Serial_GPIO_Port GPIOA
+// #define Serial_GPIO_RX_Pin GPIO_PIN_3
+// #define Serial_GPIO_TX_Pin GPIO_PIN_2
+
+// 串口通信USART3
+// #define USART_Port USART3
+// #define Serial_GPIO_Port GPIOB
+// #define Serial_GPIO_RX_Pin GPIO_PIN_11
+// #define Serial_GPIO_TX_Pin GPIO_PIN_10
+
+#define UART1_BaudRate 921600
+#define UART1_RX_SIZE 200
+
+#define USART_CLK_ENABLE_BY_PORT(port)               \
+  do {                                              \
+    if ((port) == USART1)      { __HAL_RCC_USART1_CLK_ENABLE(); } \
+    else if ((port) == USART2) { __HAL_RCC_USART2_CLK_ENABLE(); } \
+    else if ((port) == USART3) { __HAL_RCC_USART3_CLK_ENABLE(); } \
+  } while (0)
+  
+#define USART_CLK_DISABLE_BY_PORT(port)               \
+  do {                                              \
+    if ((port) == USART1)      { __HAL_RCC_USART1_CLK_DISABLE(); } \
+    else if ((port) == USART2) { __HAL_RCC_USART2_CLK_DISABLE(); } \
+    else if ((port) == USART3) { __HAL_RCC_USART3_CLK_DISABLE(); } \
+  } while (0)
 
 #define GPIO_CLK_ENABLE_BY_PORT(port)               \
   do {                                              \
