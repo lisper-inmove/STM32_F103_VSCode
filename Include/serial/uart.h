@@ -8,6 +8,7 @@
 #include "stm32f1xx_hal_gpio.h"
 #include "stm32f1xx_hal_rcc.h"
 #include "stm32f1xx_hal_uart.h"
+#include "stm32f1xx_hal_dma.h"
 
 // USART1,USART2,USART3之间切换
 #define TEST_USART_NUMBER 1
@@ -17,6 +18,8 @@
 #define ENABLE_USART1_IT 1
 // 是否使用空闲中断
 #define ENABLE_USART1_IDLE_IT 1
+// 是否使用 DMA
+#define ENABLE_USART1_DMA 1
 
 #define UART1_BaudRate 921600
 #define UART1_RX_SIZE 200
@@ -54,5 +57,6 @@ extern uint8_t rxbuff[64];
 extern uint8_t rxstate;
 
 void UART_Init(uint32_t baudRate);
+void Set_UART1_DMA(UART_HandleTypeDef *huart);
 
 #endif
