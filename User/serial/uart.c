@@ -2,8 +2,11 @@
 #include "main.h"
 #include "stm32f1xx_hal_gpio_ex.h"
 #include "stm32f1xx_hal_rcc.h"
+#include "stm32f1xx_hal_uart.h"
 
 UART_HandleTypeDef uart;
+uint8_t txbuff[64], rxbuff[64];
+uint8_t rxstate = 0;
 
 void UART_Init(uint32_t baudRate) {
 	uart.Instance = USART_Port;
@@ -15,6 +18,9 @@ void UART_Init(uint32_t baudRate) {
 	uart.Init.HwFlowCtl = UART_HWCONTROL_NONE;
 
     HAL_UART_Init(&uart);
+    #if ENABLE_USART1_IT
+    HAL_UART_Receive_IT(&uart,rxbuff,UART1_RX_SIZE);
+    #endif
 }
 
 void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
@@ -35,4 +41,38 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
     GPIO_InitType.Mode = GPIO_MODE_AF_INPUT;
     GPIO_InitType.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(Serial_GPIO_Port, &GPIO_InitType);
+
+    #if ENABLE_USART1_IT
+    HAL_NVIC_SetPriority(USART1_IRQn,3,0);
+	HAL_NVIC_EnableIRQ(USART1_IRQn);
+    #endif
+
+    #if ENABLE_USART1_IDLE_IT
+    __HAL_UART_ENABLE_IT(&uart, UART_IT_IDLE);
+    #endif
+}
+
+void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
+{
+	if(huart->Instance == USART1){
+		memcpy(txbuff, rxbuff, 20);
+		rxstate = 1;
+		HAL_UART_Receive_IT(&uart,rxbuff,20);
+	}
+}
+
+void USART1_IRQHandler(void)
+{
+	HAL_UART_IRQHandler(&uart);
+    if (__HAL_UART_GET_FLAG(&uart, UART_FLAG_IDLE)) {
+     	__HAL_UART_CLEAR_IDLEFLAG(&uart);
+        uint32_t count = UART1_RX_SIZE - uart.RxXferCount;
+        memcpy(txbuff, rxbuff, count);
+        HAL_UART_Transmit_IT(&uart,txbuff,count);
+        HAL_UART_AbortReceive_IT(&uart);
+    }
+}
+
+void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *huart) {
+    HAL_UART_Receive_IT(&uart,rxbuff,UART1_RX_SIZE);
 }

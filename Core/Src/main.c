@@ -19,18 +19,5 @@ int main(void) {
 
 	UART_Init(UART1_BaudRate);
 
-	while (1) {
-		switch(HAL_UART_Receive(&uart, buff, UART1_RX_SIZE, 200)) {
-			case HAL_OK:
-				HAL_UART_Transmit(&uart, buff, UART1_RX_SIZE, 200);
-				break;
-			case HAL_TIMEOUT:
-				if (uart.RxXferCount != (UART1_RX_SIZE - 1) && uart.RxXferCount != (UART1_RX_SIZE)) {
-					HAL_UART_Transmit(&uart, buff, UART1_RX_SIZE - 1 - uart.RxXferCount, 200);
-				}
-				break;
-			default:
-				break;
-		}
-	}
+	while (1) {}
 }
