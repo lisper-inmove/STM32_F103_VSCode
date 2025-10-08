@@ -1,5 +1,7 @@
 #include "uart.h"
 #include "main.h"
+#include "stm32f1xx_hal_gpio_ex.h"
+#include "stm32f1xx_hal_rcc.h"
 
 UART_HandleTypeDef uart;
 
@@ -17,6 +19,10 @@ void UART_Init(uint32_t baudRate) {
 
 void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
     GPIO_InitTypeDef GPIO_InitType;
+    #if ENABLE_USART1_REMAAP
+    __HAL_RCC_AFIO_CLK_ENABLE();
+    __HAL_AFIO_REMAP_USART1_ENABLE();
+    #endif
     GPIO_CLK_ENABLE_BY_PORT(Serial_GPIO_Port);
     USART_CLK_ENABLE_BY_PORT(USART_Port);
 

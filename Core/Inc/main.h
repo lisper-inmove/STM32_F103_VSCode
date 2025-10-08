@@ -64,23 +64,36 @@ void Error_Handler(void);
 #define Event_Out_GPIO_Port GPIOA
 #define Event_Out_GPIO_Pin GPIO_PIN_3
 
-// 串口通信USART1
-#define USART_Port USART1
-#define Serial_GPIO_Port GPIOA
-#define Serial_GPIO_RX_Pin GPIO_PIN_10
-#define Serial_GPIO_TX_Pin GPIO_PIN_9
+#define TEST_USART_NUMBER 1
+#define ENABLE_USART1_REMAAP 1
 
-// 串口通信USART2
-// #define USART_Port USART2
-// #define Serial_GPIO_Port GPIOA
-// #define Serial_GPIO_RX_Pin GPIO_PIN_3
-// #define Serial_GPIO_TX_Pin GPIO_PIN_2
+#if TEST_USART_NUMBER && (TEST_USART_NUMBER == 1)
+  // 串口通信USART1
+  #define USART_Port USART1
+  #if ENABLE_USART1_REMAAP
+    // 将USART RX, TX 重映射到 PB6, PB7
+    #define Serial_GPIO_Port GPIOB
+    #define Serial_GPIO_RX_Pin GPIO_PIN_7
+    #define Serial_GPIO_TX_Pin GPIO_PIN_6
+  #elif !ENABLE_USART1_REMAAP
+    #define Serial_GPIO_Port GPIOA
+    #define Serial_GPIO_RX_Pin GPIO_PIN_10
+    #define Serial_GPIO_TX_Pin GPIO_PIN_9
+  #endif
+#elif TEST_USART_NUMBER && (TEST_USART_NUMBER == 2) 
+  // 串口通信USART2
+  #define USART_Port USART2
+  #define Serial_GPIO_Port GPIOA
+  #define Serial_GPIO_RX_Pin GPIO_PIN_3
+  #define Serial_GPIO_TX_Pin GPIO_PIN_2
+#elif TEST_USART_NUMBER && (TEST_USART_NUMBER == 3)
+  // 串口通信USART3
+  #define USART_Port USART3
+  #define Serial_GPIO_Port GPIOB
+  #define Serial_GPIO_RX_Pin GPIO_PIN_11
+  #define Serial_GPIO_TX_Pin GPIO_PIN_10
+#endif 
 
-// 串口通信USART3
-// #define USART_Port USART3
-// #define Serial_GPIO_Port GPIOB
-// #define Serial_GPIO_RX_Pin GPIO_PIN_11
-// #define Serial_GPIO_TX_Pin GPIO_PIN_10
 
 #define UART1_BaudRate 921600
 #define UART1_RX_SIZE 200
