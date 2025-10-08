@@ -7,8 +7,11 @@
 #include "stm32f1xx_hal_rcc.h"
 #include "stm32f1xx_hal_uart.h"
 
+#include <assert.h>
+#include <string.h>
+
 UART_HandleTypeDef uart;
-uint8_t txbuff[64], rxbuff[64];
+uint8_t txbuff[UART1_RX_SIZE], rxbuff[UART1_RX_SIZE];
 uint8_t rxstate = 0;
 
 DMA_HandleTypeDef hdma_usart1_tx;
@@ -66,9 +69,14 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart)
 {
 	if(huart->Instance == USART1){
+        #if ENABLE_USART1_IT && !ENABLE_USART1_DMA
 		memcpy(txbuff, rxbuff, 20);
 		rxstate = 1;
 		HAL_UART_Receive_IT(&uart,rxbuff,20);
+        #endif
+        #if ENABLE_USART1_DMA
+        HAL_UART_Receive_DMA(&uart, rxbuff, UART1_RX_SIZE);
+        #endif
 	}
 }
 
@@ -81,6 +89,7 @@ void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
 void USART1_IRQHandler(void)
 {
 	HAL_UART_IRQHandler(&uart);
+    #if ENABLE_USART1_IDLE_IT
     if (__HAL_UART_GET_FLAG(&uart, UART_FLAG_IDLE)) {
      	__HAL_UART_CLEAR_IDLEFLAG(&uart);
         uint32_t count = UART1_RX_SIZE - __HAL_DMA_GET_COUNTER(uart.hdmarx);
@@ -93,6 +102,7 @@ void USART1_IRQHandler(void)
         #endif
         HAL_UART_AbortReceive_IT(&uart);
     }
+    #endif
 }
 
 void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *huart) {
@@ -153,10 +163,29 @@ void Set_UART1_DMA(UART_HandleTypeDef *huart) {
 }
 
 void DMA1_Channel4_IRQHandler(void) {
+    #if ENABLE_USART1_DMA
+    assert(uart.hdmatx != NULL);
+    assert(uart.hdmatx->Instance == DMA1_Channel4);
+    assert(uart.hdmatx->DmaBaseAddress == DMA1);
+    #endif
     // 内存到外设
-	HAL_DMA_IRQHandler(uart.hdmatx);
+	HAL_DMA_IRQHandler(&hdma_usart1_tx);
 }
+
 void DMA1_Channel5_IRQHandler(void) {
+    #if ENABLE_USART1_DMA
+    assert(uart.hdmarx != NULL);
+    assert(uart.hdmarx->Instance == DMA1_Channel5);
+    assert(uart.hdmarx->DmaBaseAddress == DMA1);
+    #endif
+
     // 外设到内存
-	HAL_DMA_IRQHandler(uart.hdmarx);
+	HAL_DMA_IRQHandler(&hdma_usart1_rx);
+
+    // 不使用空闲中断接收外设的数据。Just For Test
+    // 只有接收到了 HAL_UART_Receive_DMA 函数指定的数据长度，此函数才会被调用
+    #if ENABLE_USART1_DMA
+	memcpy(txbuff, rxbuff, UART1_RX_SIZE);
+    HAL_UART_Transmit_DMA(&uart, txbuff, UART1_RX_SIZE);
+    #endif
 }

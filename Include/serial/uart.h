@@ -17,12 +17,9 @@
 // 是否使用USART1的中断
 #define ENABLE_USART1_IT 1
 // 是否使用空闲中断
-#define ENABLE_USART1_IDLE_IT 1
+#define ENABLE_USART1_IDLE_IT 0
 // 是否使用 DMA
 #define ENABLE_USART1_DMA 1
-
-#define UART1_BaudRate 921600
-#define UART1_RX_SIZE 200
 
 #if TEST_USART_NUMBER && (TEST_USART_NUMBER == 1)
   // 串口通信USART1
@@ -51,9 +48,13 @@
   #define Serial_GPIO_TX_Pin GPIO_PIN_10
 #endif
 
+
+#define UART1_BaudRate 921600
+// 最大接收数据长度一定要不大于txbuffer/rxbuffer，否则会发生内存越界，导致破坏 DMA_HandleTypeDef hdma_usart1_tx;DMA_HandleTypeDef hdma_usart1_rx;
+#define UART1_RX_SIZE 20  
 extern UART_HandleTypeDef uart;
-extern uint8_t txbuff[64];
-extern uint8_t rxbuff[64];
+extern uint8_t txbuff[UART1_RX_SIZE];
+extern uint8_t rxbuff[UART1_RX_SIZE];
 extern uint8_t rxstate;
 
 void UART_Init(uint32_t baudRate);
