@@ -39,7 +39,22 @@ void Timer1_Init(uint16_t arr, uint16_t psc, uint8_t rep) {
     */
     tim1.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
     
+    /*
+        HAL_TIM_Base_Init 函数中会调用 TIM_Base_SetConfig，SetConfig函数中有以内容
+
+        // Generate an update event to reload the Prescaler(预分频器的值)
+        // and the repetition counter (only for advanced timer) value immediately
+        TIMx->EGR = TIM_EGR_UG;
+    */
     HAL_TIM_Base_Init(&tim1);
+
+    /**
+        HAL库会软件产生一次更新事件，所以在Start之后，会把上收到一次完成（uprintf函数打印一次）
+        使用clear宏手动清除，可以去掉此逻辑
+        加上这一句之后，再观察现在，TIM2, TIM3, TIM4 在启动之后马上输出 1，TIM1不会
+    */
+    __HAL_TIM_CLEAR_FLAG(&tim1, TIM_FLAG_UPDATE);
+    
     HAL_TIM_Base_Start(&tim1);
 }
 
