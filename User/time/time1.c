@@ -4,11 +4,14 @@
 #include "stm32f1xx_hal_def.h"
 #include "stm32f1xx_hal_rcc.h"
 #include "stm32f1xx_hal_tim.h"
+#include "uart.h"
 
 TIM_HandleTypeDef tim1;
 TIM_HandleTypeDef tim2;
 TIM_HandleTypeDef tim3;
 TIM_HandleTypeDef tim4;
+
+uint8_t num1 = 0;
 
 
 /**
@@ -55,7 +58,7 @@ void Timer1_Init(uint16_t arr, uint16_t psc, uint8_t rep) {
     */
     __HAL_TIM_CLEAR_FLAG(&tim1, TIM_FLAG_UPDATE);
     
-    HAL_TIM_Base_Start(&tim1);
+    HAL_TIM_Base_Start_IT(&tim1);
 }
 
 void Timer2_Init(uint16_t arr, uint16_t psc) {
@@ -91,6 +94,8 @@ void Timer4_Init(uint16_t arr, uint16_t psc) {
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim) {
     if (htim->Instance == TIM1) {
         __HAL_RCC_TIM1_CLK_ENABLE();
+        HAL_NVIC_SetPriority(TIM1_UP_IRQn,3,0);
+		HAL_NVIC_EnableIRQ(TIM1_UP_IRQn);
     } else if (htim->Instance == TIM2) {
         __HAL_RCC_TIM2_CLK_ENABLE();
     } else if (htim->Instance == TIM3) {
@@ -98,4 +103,24 @@ void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim) {
     } else if (htim->Instance == TIM4) {
         __HAL_RCC_TIM4_CLK_ENABLE();
     }
+}
+
+// 中断回调函数
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+    if (htim->Instance == TIM1) {
+        uprintf("Interupt, Tim1 Current value is %d\n", num1);
+        num1++;
+        if (num1 >= 100) {
+            HAL_TIM_Base_Stop_IT(htim);
+            HAL_TIM_Base_DeInit(htim);
+        }
+    }
+}
+
+/**
+    TIM1_UP_IRQHandler 这是 汇编代码中，中断处理函数的入口点
+    HAL_TIM_IRQHandler 是中断逻辑处理函数，其中会根据情况调用不同的回调函数
+*/
+void TIM1_UP_IRQHandler(void) {
+    HAL_TIM_IRQHandler(&tim1);
 }

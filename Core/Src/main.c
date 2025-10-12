@@ -22,16 +22,10 @@ int main(void) {
 	Timer4_Init(4999, 35999);
 	UART_Init(UART1_BaudRate);
 
-	uint8_t num1 = 0;
 	uint8_t num2 = 0;
 	uint8_t num3 = 0;
 	uint8_t num4 = 0;
 	while (1) {
-		if (__HAL_TIM_GET_FLAG(&tim1, TIM_FLAG_UPDATE)) {
-			__HAL_TIM_CLEAR_FLAG(&tim1, TIM_FLAG_UPDATE);
-			num1++;
-			uprintf("TIM1 Current value is %d\n", num1);
-		}
 		if (__HAL_TIM_GET_FLAG(&tim2, TIM_FLAG_UPDATE)) {
 			__HAL_TIM_CLEAR_FLAG(&tim2, TIM_FLAG_UPDATE);
 			num2++;
