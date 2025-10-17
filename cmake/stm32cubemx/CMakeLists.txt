@@ -45,7 +45,7 @@ set(STM32_Drivers_Src
 
 # Drivers Midllewares
 
-
+include(windows_debug.cmake)
 
 # Link directories setup
 set(MX_LINK_DIRS
@@ -60,6 +60,7 @@ set(MX_LINK_LIBS
 # Interface library for includes and symbols
 add_library(stm32cubemx INTERFACE)
 target_include_directories(stm32cubemx INTERFACE ${MX_Include_Dirs})
+target_include_directories(stm32cubemx INTERFACE ${User_Inc})
 target_compile_definitions(stm32cubemx INTERFACE ${MX_Defines_Syms})
 
 # Create STM32_Drivers static library
@@ -69,7 +70,7 @@ target_link_libraries(STM32_Drivers PUBLIC stm32cubemx)
 
 
 # Add STM32CubeMX generated application sources to the project
-target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${MX_Application_Src})
+target_sources(${CMAKE_PROJECT_NAME} PRIVATE ${MX_Application_Src} ${User_Src})
 
 # Link directories setup
 target_link_directories(${CMAKE_PROJECT_NAME} PRIVATE ${MX_LINK_DIRS})
