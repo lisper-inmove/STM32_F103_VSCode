@@ -9,9 +9,9 @@ int main(void){
 	SystemCoreClockUpdate();
 
 	Led1_Init();
-	while(1) {
-		HAL_Delay(3000);
+	SW1_Init();
 
-		HAL_GPIO_TogglePin(Led1_GPIO_Group, Led1_GPIO_Pin);
+	while(1) {
+		SW1_Scan_Up_Delay();
 	}
 }
