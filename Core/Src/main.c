@@ -10,7 +10,7 @@ int main(void){
 
 	Led1_Init();
 	while(1) {
-		HAL_Delay(500);
+		HAL_Delay(3000);
 
 		HAL_GPIO_TogglePin(Led1_GPIO_Group, Led1_GPIO_Pin);
 	}
