@@ -9,9 +9,9 @@ int main(void){
 	SystemCoreClockUpdate();
 
 	Led1_Init();
-	SW1_Init();
+	SW1_Init_IT();
 
 	while(1) {
-		SW1_Scan_Up_Delay();
+		// SW1_Scan_Up_Delay();
 	}
 }

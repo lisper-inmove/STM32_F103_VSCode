@@ -1,5 +1,7 @@
 #include "igpio.h"
+#include "stm32f103xb.h"
 #include "stm32f1xx_hal.h"
+#include "stm32f1xx_hal_cortex.h"
 #include "stm32f1xx_hal_gpio.h"
 #include "stm32f1xx_hal_rcc.h"
 
@@ -100,6 +102,34 @@ void SW1_Scan_Up_Delay(void) {
     } else if (SW1_IN == 0 && SWPressed == 1) {
         HAL_Delay(3000);
         SWPressed = 0;
+        HAL_GPIO_TogglePin(Led1_GPIO_Group, Led1_GPIO_Pin);
+    }
+}
+
+// ============== 用中断来控制 =====================
+
+
+void SW1_Init_IT(void) {
+    GPIO_InitTypeDef gpio;
+    GPIO_CLK_ENABLE_BY_PORT(SW1_GPIO_Group);
+    gpio.Pin = SW1_GPIO_Pin;
+    gpio.Mode = GPIO_MODE_IT_RISING;
+    gpio.Pull = GPIO_PULLDOWN;
+    HAL_GPIO_Init(SW1_GPIO_Group, &gpio);
+    HAL_NVIC_SetPriority(EXTI15_10_IRQn, 4, 0);
+    HAL_NVIC_EnableIRQ(EXTI15_10_IRQn);
+}
+
+void EXTI15_10_IRQHandler(void) {
+    // 此函数由汇编代码调用（GPIO 10~15的中断）
+	HAL_GPIO_EXTI_IRQHandler(SW1_GPIO_Pin);
+}
+
+void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
+    if (SW1_IN == 1) {
+        for (int i = 0; i < 0xFFFF; i++) {
+            if (SW1_IN == 0) return;
+        }
         HAL_GPIO_TogglePin(Led1_GPIO_Group, Led1_GPIO_Pin);
     }
 }
