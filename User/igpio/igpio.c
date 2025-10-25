@@ -1,4 +1,6 @@
 #include "igpio.h"
+#include <stdint.h>
+#include "cmsis_gcc.h"
 #include "stm32f103xb.h"
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx_hal_cortex.h"
@@ -107,8 +109,6 @@ void SW1_Scan_Up_Delay(void) {
 }
 
 // ============== 用中断来控制 =====================
-
-
 void SW1_Init_IT(void) {
     GPIO_InitTypeDef gpio;
     GPIO_CLK_ENABLE_BY_PORT(SW1_GPIO_Group);
@@ -131,6 +131,7 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
             if (SW1_IN == 0) return;
         }
         HAL_GPIO_TogglePin(Led1_GPIO_Group, Led1_GPIO_Pin);
+        __SEV();
     }
 }
 
@@ -142,4 +143,23 @@ void SW1_Init_Evt(void) {
     gpio.Mode = GPIO_MODE_EVT_RISING_FALLING;
     gpio.Pull = GPIO_PULLUP;
     HAL_GPIO_Init(SW1_GPIO_Group, &gpio);
+}
+
+// ================== 事件输出 =============================
+void SW_Init_EvtOut() {
+    /**  通过按键向外输出脉冲
+        示波器: 接GND和SW_EventOut_Pin(本次实验用的A3)。示波器设置为CHA，40ns, 垂直5V
+        按键SW1_GPIO_Pin(A15)
+        Led灯Led1_GPIO_Pin(A6)
+        按键按下时，示波器上出现一个脉冲
+    */
+    GPIO_InitTypeDef gpio;
+    GPIO_CLK_ENABLE_BY_PORT(SW_EventOut_Group);
+	__HAL_RCC_AFIO_CLK_ENABLE();
+	gpio.Pin = SW_EventOut_Pin;
+	gpio.Mode = GPIO_MODE_AF_PP;
+	gpio.Speed = GPIO_SPEED_FREQ_HIGH;
+	HAL_GPIO_Init(SW_EventOut_Group,&gpio);
+	HAL_GPIOEx_ConfigEventout(SW_AFIO_EventOut_Group,SW_AFIO_EventOut_Pin);
+	HAL_GPIOEx_EnableEventout();
 }

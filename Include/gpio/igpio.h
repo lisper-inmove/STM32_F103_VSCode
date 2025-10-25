@@ -7,6 +7,11 @@
 #define SW1_GPIO_Group GPIOC
 #define SW1_GPIO_Pin GPIO_PIN_15
 
+#define SW_EventOut_Group GPIOA
+#define SW_EventOut_Pin GPIO_PIN_3
+#define SW_AFIO_EventOut_Group AFIO_EVENTOUT_PORT_A
+#define SW_AFIO_EventOut_Pin AFIO_EVENTOUT_PIN_3
+
 #define GPIO_CLK_ENABLE_BY_PORT(port)               \
   do {                                              \
     if ((port) == GPIOA)      { __HAL_RCC_GPIOA_CLK_ENABLE(); } \
@@ -27,6 +32,7 @@ void Led1_Init(void);
 void SW1_Init(void);
 void SW1_Init_IT(void);
 void SW1_Init_Evt(void);
+void SW_Init_EvtOut();
 void SW1_Scan_Down(void);
 void SW1_Scan_Long_Down(void);
 void SW1_Scan_Up(void);

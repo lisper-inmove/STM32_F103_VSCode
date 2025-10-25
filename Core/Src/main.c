@@ -11,18 +11,10 @@ int main(void){
 	SystemCoreClockUpdate();
 
 	Led1_Init();
-	SW1_Init_Evt();
+	SW1_Init_IT();
+	SW_Init_EvtOut();
 
 	while(1) {
-		for (int i = 0; i < 6; i++) {
-			HAL_GPIO_TogglePin(Led1_GPIO_Group, Led1_GPIO_Pin);
-			HAL_Delay(200);
-		}
-		HAL_GPIO_WritePin(Led1_GPIO_Group, Led1_GPIO_Pin, GPIO_PIN_SET);
-		// 关时基中断
-		HAL_SuspendTick();
-		HAL_PWR_EnterSLEEPMode(0, PWR_SLEEPENTRY_WFE);
-		// 开中断
-		HAL_ResumeTick();
+
 	}
 }
