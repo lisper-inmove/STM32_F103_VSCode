@@ -133,3 +133,13 @@ void HAL_GPIO_EXTI_Callback(uint16_t GPIO_Pin) {
         HAL_GPIO_TogglePin(Led1_GPIO_Group, Led1_GPIO_Pin);
     }
 }
+
+// ================== 事件 ==============================
+void SW1_Init_Evt(void) {
+    GPIO_InitTypeDef gpio;
+    GPIO_CLK_ENABLE_BY_PORT(SW1_GPIO_Group);
+    gpio.Pin = SW1_GPIO_Pin;
+    gpio.Mode = GPIO_MODE_EVT_RISING_FALLING;
+    gpio.Pull = GPIO_PULLUP;
+    HAL_GPIO_Init(SW1_GPIO_Group, &gpio);
+}

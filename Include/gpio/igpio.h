@@ -26,6 +26,7 @@
 void Led1_Init(void);
 void SW1_Init(void);
 void SW1_Init_IT(void);
+void SW1_Init_Evt(void);
 void SW1_Scan_Down(void);
 void SW1_Scan_Long_Down(void);
 void SW1_Scan_Up(void);
