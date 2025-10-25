@@ -12,9 +12,12 @@ int main(void){
 	Led1_Init();
 	SW1_Init_IT();
 
+	// 5秒之前，可以通过按钮控制Led。5秒之后，按钮不能控制Led
+	HAL_Delay(5000);
+	// LockPin之后，DeInit不生效（5秒之后也能控制 Led）
+	HAL_GPIO_LockPin(Led1_GPIO_Group, Led1_GPIO_Pin);
+	HAL_GPIO_DeInit(Led1_GPIO_Group, Led1_GPIO_Pin);
+
 	while(1) {
-		HAL_Delay(500);
-		// 软件触发中断（软件触发按键按下时触发的事件），直接进入中断处理函数
-		__HAL_GPIO_EXTI_GENERATE_SWIT(SW1_GPIO_Pin);
 	}
 }
