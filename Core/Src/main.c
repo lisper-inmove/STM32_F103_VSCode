@@ -1,4 +1,5 @@
 #include "stm32f1xx_hal.h"
+#include "stm32f1xx_hal_gpio.h"
 #include "sysclock.h"
 #include "igpio.h"
 
@@ -12,6 +13,8 @@ int main(void){
 	SW1_Init_IT();
 
 	while(1) {
-		// SW1_Scan_Up_Delay();
+		HAL_Delay(500);
+		// 软件触发中断（软件触发按键按下时触发的事件），直接进入中断处理函数
+		__HAL_GPIO_EXTI_GENERATE_SWIT(SW1_GPIO_Pin);
 	}
 }
