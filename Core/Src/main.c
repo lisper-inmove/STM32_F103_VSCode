@@ -1,17 +1,24 @@
+#include "stm32f103xb.h"
 #include "stm32f1xx_hal.h"
+#include "stm32f1xx_hal_def.h"
+#include "stm32f1xx_hal_uart.h"
 #include "sysclock.h"
+#include "iserial.h"
 
-uint32_t  HCLKFreq;
-uint32_t  PCLK1Freq;
-uint32_t  PCLK2Freq;
+#include <stdint.h>
 
 int main(void){
 	HAL_Init();
 	RccClock_Init_HSE();
 	HAL_RCC_MCOConfig(RCC_MCO1,RCC_MCO1SOURCE_SYSCLK,RCC_MCODIV_1);	
 	SystemCoreClockUpdate();
-	HCLKFreq = HAL_RCC_GetHCLKFreq();
-	PCLK1Freq = HAL_RCC_GetPCLK1Freq();
-	PCLK2Freq = HAL_RCC_GetPCLK2Freq();
 
+	SerialInit(USART1, U1_BAUD_RATE, &uart1);
+	SerialInit(USART2, U2_BAUD_RATE, &uart2);
+	SerialInit(USART3, U3_BAUD_RATE, &uart3);
+
+	while(1) {
+		Serial_Loop(&uart2);
+	}
+	
 }
