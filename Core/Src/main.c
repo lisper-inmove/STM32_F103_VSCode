@@ -14,11 +14,10 @@ int main(void){
 	SystemCoreClockUpdate();
 
 	SerialInit(USART1, U1_BAUD_RATE, &uart1);
-	SerialInit(USART2, U2_BAUD_RATE, &uart2);
-	SerialInit(USART3, U3_BAUD_RATE, &uart3);
+	// SerialInit(USART2, U2_BAUD_RATE, &uart2);
+	// SerialInit(USART3, U3_BAUD_RATE, &uart3);
 
 	while(1) {
-		Serial_Loop(&uart2);
 	}
 	
 }

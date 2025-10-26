@@ -4,6 +4,21 @@
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx_hal_uart.h"
 
+#define SERIAL_1_Enable_IT 1
+#define SERIAL_1_GPIO_Group GPIOA
+#define SERIAL_1_GPIO_TX_Pin GPIO_PIN_9
+#define SERIAL_1_GPIO_RX_Pin GPIO_PIN_10
+
+#define SERIAL_2_Enable_TI 0
+#define SERIAL_2_GPIO_Group GPIOA
+#define SERIAL_2_GPIO_TX_Pin GPIO_PIN_2
+#define SERIAL_2_GPIO_RX_Pin GPIO_PIN_3
+
+#define SERIAL_3_Enable_TI 0
+#define SERIAL_3_GPIO_Group GPIOB
+#define SERIAL_3_GPIO_TX_Pin GPIO_PIN_10
+#define SERIAL_3_GPIO_RX_Pin GPIO_PIN_11
+
 #define USART_CLK_ENABLE_BY_PORT(usart)               \
   do {                                              \
     if ((usart) == USART1)      { __HAL_RCC_USART1_CLK_ENABLE(); } \
