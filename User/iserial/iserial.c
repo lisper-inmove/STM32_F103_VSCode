@@ -32,6 +32,7 @@ void SerialInit(USART_TypeDef *usart, uint32_t baudRate, UART_HandleTypeDef *hua
     */
     #if SERIAL_1_Enable_IT || SERIAL_2_Enable_IT || SERIAL_3_Enable_IT
     HAL_UART_Receive_IT(huart, rxbuf, DATA_BUF_SIZE);
+    __HAL_UART_ENABLE_IT(huart, UART_IT_IDLE);
     // __HAL_UART_ENABLE_IT(huart, UART_IT_RXNE);
     #endif
 }
@@ -97,6 +98,21 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
 
 void USART1_IRQHandler(void) {
     HAL_UART_IRQHandler(&uart1);
+
+    if(__HAL_UART_GET_FLAG(&uart1, UART_FLAG_IDLE)){
+		__HAL_UART_CLEAR_IDLEFLAG(&uart1);
+        int32_t count = DATA_BUF_SIZE - uart1.RxXferCount;
+
+        // Abort如果放在if语句的后面，会导致后面每次uart1.RxXferCount为0
+		HAL_UART_AbortReceive_IT(&uart1);
+        if (count > 0) {
+            memcpy(txbuf, rxbuf, count);
+            HAL_UART_Transmit_IT(&uart1, txbuf, count);
+            // HAL_UART_Receive_IT中会把uart1.RxXferCount设置为Size
+            // 如果在Receive之后再调用 AbortReceive，则会导致RxXferCount为0
+	        HAL_UART_Receive_IT(&uart1, rxbuf, DATA_BUF_SIZE);
+        }
+	}
 }
 
 void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
