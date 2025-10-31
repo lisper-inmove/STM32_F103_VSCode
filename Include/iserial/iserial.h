@@ -26,20 +26,18 @@
     else if ((usart) == USART3) { __HAL_RCC_USART3_CLK_ENABLE(); } \
   } while (0)
 
-#define DATA_BUF_SIZE 256
+#define DATA_BUF_SIZE 128
 #define TX_RX_TIME_OUT 200
 #define U1_BAUD_RATE 921600
 #define U2_BAUD_RATE 921600
 #define U3_BAUD_RATE 921600
   
 void U1_Init(uint32_t bandrate);
-void U2_Init(uint32_t bandrate);
-void U3_Init(uint32_t bandrate);
 void SerialInit(USART_TypeDef *usart, uint32_t baudRate, UART_HandleTypeDef *huart);
-void Serial_Loop(UART_HandleTypeDef *huart);
 
 extern UART_HandleTypeDef uart1;
-extern UART_HandleTypeDef uart2;
-extern UART_HandleTypeDef uart3;
+
+extern uint8_t rxbuf[DATA_BUF_SIZE];
+extern uint8_t txbuf[DATA_BUF_SIZE];
 
 #endif
