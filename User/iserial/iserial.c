@@ -27,6 +27,7 @@ void SerialInit(USART_TypeDef *usart, uint32_t baudRate, UART_HandleTypeDef *hua
     huart->Init.HwFlowCtl = UART_HWCONTROL_NONE;
     HAL_UART_Init(huart);
 
+    __HAL_UART_ENABLE_IT(huart, UART_IT_IDLE);
     HAL_UART_Receive_DMA(huart, rxbuf, DATA_BUF_SIZE);
 }
 
@@ -82,27 +83,20 @@ void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
     }
 }
 
-void HAL_UART_RxCpltCallback(UART_HandleTypeDef *huart) {
-    /**
-        完成中断，接收到DATA_BUF_SIZE个字节时触发
-    */
-    int32_t count = DATA_BUF_SIZE - __HAL_DMA_GET_COUNTER(uart1.hdmarx);
-    if (count > 0) {
-        memcpy(txbuf, rxbuf, count);
-        HAL_UART_Transmit_DMA(&uart1, txbuf, count);
-    }
-    HAL_UART_Receive_DMA(&uart1, rxbuf, DATA_BUF_SIZE);
-}
-
-void HAL_UART_RxHalfCpltCallback(UART_HandleTypeDef *huart) {
-    /**
-        半完成中断，接收到DATA_BUF_SIZE/2个字节时触发
-    */
-    int32_t count = DATA_BUF_SIZE - __HAL_DMA_GET_COUNTER(uart1.hdmarx);
-}
-
 void USART1_IRQHandler(void) {
     HAL_UART_IRQHandler(&uart1);
+
+    if(__HAL_UART_GET_FLAG(&uart1, UART_FLAG_IDLE)){
+		__HAL_UART_CLEAR_IDLEFLAG(&uart1);
+
+        int32_t count = DATA_BUF_SIZE - __HAL_DMA_GET_COUNTER(uart1.hdmarx);
+        if (count > 0) {
+            memcpy(txbuf, rxbuf, count);
+            HAL_UART_Transmit_DMA(&uart1, txbuf, count);
+        }
+		HAL_UART_AbortReceive_IT(&uart1);
+        HAL_UART_Receive_DMA(&uart1, rxbuf, DATA_BUF_SIZE);
+	}
 }
 
 void DMA1_Channel4_IRQHandler(void) {
