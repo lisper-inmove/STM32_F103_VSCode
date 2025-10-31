@@ -14,6 +14,7 @@ int main(void){
 	SystemCoreClockUpdate();
 
 	SerialInit(USART1, U1_BAUD_RATE, &uart1);
+	u1_printf("Hello STM32");
 
 	while(1) {
 	}

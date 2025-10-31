@@ -3,6 +3,8 @@
 
 #include "stm32f1xx_hal.h"
 #include "stm32f1xx_hal_uart.h"
+#include "stdarg.h"
+#include "stdio.h"
 
 #define SERIAL_1_Enable_IT 1
 #define SERIAL_1_GPIO_Group GPIOA
@@ -34,6 +36,7 @@
   
 void U1_Init(uint32_t bandrate);
 void SerialInit(USART_TypeDef *usart, uint32_t baudRate, UART_HandleTypeDef *huart);
+void u1_printf(char *fmt,...);
 
 extern UART_HandleTypeDef uart1;
 
