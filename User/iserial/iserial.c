@@ -17,6 +17,15 @@ DMA_HandleTypeDef dmarx;
 uint8_t rxbuf[DATA_BUF_SIZE];
 uint8_t txbuf[DATA_BUF_SIZE];
 
+void Led1_Init(void) {
+    GPIO_InitTypeDef gpio;
+    GPIO_CLK_ENABLE_BY_PORT(GPIOA);
+    gpio.Pin = GPIO_PIN_5;
+    gpio.Mode = GPIO_MODE_OUTPUT_OD;
+    gpio.Speed = GPIO_SPEED_FREQ_LOW;
+    HAL_GPIO_Init(GPIOA, &gpio);
+}
+
 void SerialInit(USART_TypeDef *usart, uint32_t baudRate, UART_HandleTypeDef *huart) {
     huart->Instance = usart;
     huart->Init.BaudRate = baudRate;
@@ -29,6 +38,8 @@ void SerialInit(USART_TypeDef *usart, uint32_t baudRate, UART_HandleTypeDef *hua
 
     __HAL_UART_ENABLE_IT(huart, UART_IT_IDLE);
     HAL_UART_Receive_DMA(huart, rxbuf, DATA_BUF_SIZE);
+
+    Led1_Init();
 }
 
 void HAL_UART_MspInit(UART_HandleTypeDef *huart) {
@@ -97,6 +108,17 @@ void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *huart) {
     if (count > 0) {
         memcpy(txbuf, rxbuf, count);
         HAL_UART_Transmit_DMA(&uart1, txbuf, count);
+        /**
+            通过串口助手发消息控制Led
+            连线
+            1. ch340 Tx ~ ARx
+            2. ATx ~ BTx
+            3. AGND ~ BGND
+            4. A PA5 ~ Led Low, Led High ~ 3v3
+            5. B PA5 ~ Led Low, Led High ~ 3v3
+        */
+        // if rxbuf == "Close" or if rxbuf == "Open"
+        HAL_GPIO_TogglePin(GPIOA, GPIO_PIN_5);
     }
     HAL_UART_Receive_DMA(&uart1, rxbuf, DATA_BUF_SIZE);
 }
