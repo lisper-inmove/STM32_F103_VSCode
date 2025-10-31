@@ -88,15 +88,17 @@ void USART1_IRQHandler(void) {
 
     if(__HAL_UART_GET_FLAG(&uart1, UART_FLAG_IDLE)){
 		__HAL_UART_CLEAR_IDLEFLAG(&uart1);
-
-        int32_t count = DATA_BUF_SIZE - __HAL_DMA_GET_COUNTER(uart1.hdmarx);
-        if (count > 0) {
-            memcpy(txbuf, rxbuf, count);
-            HAL_UART_Transmit_DMA(&uart1, txbuf, count);
-        }
 		HAL_UART_AbortReceive_IT(&uart1);
-        HAL_UART_Receive_DMA(&uart1, rxbuf, DATA_BUF_SIZE);
 	}
+}
+
+void HAL_UART_AbortReceiveCpltCallback(UART_HandleTypeDef *huart) {
+    int32_t count = DATA_BUF_SIZE - __HAL_DMA_GET_COUNTER(uart1.hdmarx);
+    if (count > 0) {
+        memcpy(txbuf, rxbuf, count);
+        HAL_UART_Transmit_DMA(&uart1, txbuf, count);
+    }
+    HAL_UART_Receive_DMA(&uart1, rxbuf, DATA_BUF_SIZE);
 }
 
 void DMA1_Channel4_IRQHandler(void) {
