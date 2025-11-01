@@ -14,7 +14,7 @@ int main(void){
 	HAL_RCC_MCOConfig(RCC_MCO1,RCC_MCO1SOURCE_SYSCLK,RCC_MCODIV_1);	
 	SystemCoreClockUpdate();
 
-	Timer1_Init(1999, 35999, 2);
+	Timer1_Init(1999, 35999, 0);
 	Timer2_Init(1999, 35999);
 	Timer3_Init(1999, 35999);
 	Timer4_Init(1999, 35999);
