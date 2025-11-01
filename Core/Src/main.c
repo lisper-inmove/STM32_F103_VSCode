@@ -22,32 +22,7 @@ int main(void){
 	SerialInit(USART1, U1_BAUD_RATE, &uart1);
 	u1_printf("Hello STM32\n");
 
-	int32_t num1 = 0;
-	int32_t num2 = 0;
-	int32_t num3 = 0;
-	int32_t num4 = 0;
-
 	while(1) {
-		if(__HAL_TIM_GET_FLAG(&tim1, TIM_FLAG_UPDATE)) {
-			__HAL_TIM_CLEAR_FLAG(&tim1, TIM_FLAG_UPDATE);
-			num1++;
-			u1_printf("Timer1 times: %d\n", num1);
-		}
-		if(__HAL_TIM_GET_FLAG(&tim2, TIM_FLAG_UPDATE)) {
-			__HAL_TIM_CLEAR_FLAG(&tim2, TIM_FLAG_UPDATE);
-			num2++;
-			u1_printf("Timer2 times: %d\n", num2);
-		}
-		if(__HAL_TIM_GET_FLAG(&tim3, TIM_FLAG_UPDATE)) {
-			__HAL_TIM_CLEAR_FLAG(&tim3, TIM_FLAG_UPDATE);
-			num3++;
-			u1_printf("Timer3 times: %d\n", num3);
-		}
-		if(__HAL_TIM_GET_FLAG(&tim4, TIM_FLAG_UPDATE)) {
-			__HAL_TIM_CLEAR_FLAG(&tim4, TIM_FLAG_UPDATE);
-			num4++;
-			u1_printf("Timer4 times: %d\n", num4);
-		}
 	}
 	
 }

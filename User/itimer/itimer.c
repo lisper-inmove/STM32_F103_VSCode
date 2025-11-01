@@ -1,4 +1,5 @@
 #include "itimer.h"
+#include "iserial.h"
 #include "stm32f1xx_hal_tim.h"
 
 TIM_HandleTypeDef tim1;
@@ -45,7 +46,7 @@ void Timer1_Init(uint16_t arr, uint16_t psc, uint8_t rep) {
         加上这一句之后，再观察现在，TIM2, TIM3, TIM4 在启动之后马上输出 1，TIM1不会
     */
     __HAL_TIM_CLEAR_FLAG(&tim1, TIM_FLAG_UPDATE);
-    HAL_TIM_Base_Start(&tim1);
+    HAL_TIM_Base_Start_IT(&tim1);
 }
 
 void Timer2_Init(uint16_t arr, uint16_t psc) {
@@ -56,7 +57,7 @@ void Timer2_Init(uint16_t arr, uint16_t psc) {
 	tim2.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 	HAL_TIM_Base_Init(&tim2);
     __HAL_TIM_CLEAR_FLAG(&tim2, TIM_FLAG_UPDATE);
-	HAL_TIM_Base_Start(&tim2);
+	HAL_TIM_Base_Start_IT(&tim2);
 }
 void Timer3_Init(uint16_t arr, uint16_t psc) {
 	tim3.Instance = TIM3;
@@ -66,7 +67,7 @@ void Timer3_Init(uint16_t arr, uint16_t psc) {
 	tim3.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 	HAL_TIM_Base_Init(&tim3);	
     __HAL_TIM_CLEAR_FLAG(&tim3, TIM_FLAG_UPDATE);
-	HAL_TIM_Base_Start(&tim3);
+	HAL_TIM_Base_Start_IT(&tim3);
 }
 void Timer4_Init(uint16_t arr, uint16_t psc) {
 	tim4.Instance = TIM4;
@@ -76,18 +77,26 @@ void Timer4_Init(uint16_t arr, uint16_t psc) {
 	tim4.Init.AutoReloadPreload = TIM_AUTORELOAD_PRELOAD_DISABLE;
 	HAL_TIM_Base_Init(&tim4);	
     __HAL_TIM_CLEAR_FLAG(&tim4, TIM_FLAG_UPDATE);
-	HAL_TIM_Base_Start(&tim4);
+	HAL_TIM_Base_Start_IT(&tim4);
 }
 
 void HAL_TIM_Base_MspInit(TIM_HandleTypeDef *htim) {
 	if(htim->Instance == TIM1) {
 		__HAL_RCC_TIM1_CLK_ENABLE();
+        HAL_NVIC_SetPriority(TIM1_UP_IRQn, 3, 0);
+		HAL_NVIC_EnableIRQ(TIM1_UP_IRQn);
 	}else if(htim->Instance == TIM2) {
 		__HAL_RCC_TIM2_CLK_ENABLE();
+        HAL_NVIC_SetPriority(TIM2_IRQn, 3, 0);
+		HAL_NVIC_EnableIRQ(TIM2_IRQn);
 	}else if(htim->Instance == TIM3) {
 		__HAL_RCC_TIM3_CLK_ENABLE();
+        HAL_NVIC_SetPriority(TIM3_IRQn, 3, 0);
+		HAL_NVIC_EnableIRQ(TIM3_IRQn);
 	}else if(htim->Instance == TIM4) {
 		__HAL_RCC_TIM4_CLK_ENABLE();
+        HAL_NVIC_SetPriority(TIM4_IRQn, 3, 0);
+		HAL_NVIC_EnableIRQ(TIM4_IRQn);
 	}
 }
 
@@ -101,4 +110,41 @@ void HAL_TIM_Base_MspDeInit(TIM_HandleTypeDef *htim) {
 	}else if(htim->Instance == TIM4) {
 		__HAL_RCC_TIM4_CLK_DISABLE();
 	}
+}
+
+int32_t num1 = 0;
+int32_t num2 = 0;
+int32_t num3 = 0;
+int32_t num4 = 0;
+
+void HAL_TIM_PeriodElapsedCallback(TIM_HandleTypeDef *htim) {
+	if(htim->Instance == TIM1){
+		u1_printf("Timer1 %d\n",num1);
+		num1++;
+	}else if(htim->Instance == TIM2){
+		u1_printf("Timer2 %d\n",num2);
+        num2++;
+	}else if(htim->Instance == TIM3){
+		u1_printf("Timer3 %d\n",num3);
+        num3++;
+	}else if(htim->Instance == TIM4){
+		u1_printf("Timer4 %d\n",num4);
+        num4++;
+	}
+}
+
+void TIM1_UP_IRQHandler(void) {
+	HAL_TIM_IRQHandler(&tim1);
+}
+
+void TIM2_IRQHandler(void) {
+	HAL_TIM_IRQHandler(&tim2);
+}
+
+void TIM3_IRQHandler(void) {
+	HAL_TIM_IRQHandler(&tim3);
+}
+
+void TIM4_IRQHandler(void) {
+	HAL_TIM_IRQHandler(&tim4);
 }
